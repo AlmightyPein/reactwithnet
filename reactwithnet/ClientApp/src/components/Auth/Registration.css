@@ -1,0 +1,61 @@
+﻿
+h2{
+    text-align:center;
+}
+.icon{
+   padding-top: 5px;
+   padding-right:1px;
+   max-width:max-content;
+   width:30px;
+   height:30px;
+   margin-right:10px;
+}
+.register{
+    box-shadow:10px 10px;
+    background-color:red;
+}
+
+.main{
+   display:flex;
+   justify-content:center;
+   justify-items:center;
+}
+img {
+    width: inherit;
+    height: inherit;
+}
+.form{
+   justify-content:center;
+}
+.section{
+    border-radius:10px;
+    border-style:outset;
+}
+.border-rounded {
+    border-radius: 10px;
+    border-style: outset;
+    width:90%;
+    align-self:center;
+}
+.test{
+    display:inline-flex;
+    
+    
+    align-content:center;
+}
+
+#tos{
+    display:flex;
+    align-content:center;
+}
+.tos{
+    margin-left:36px;
+}
+#submit {
+    
+}
+.btn {
+    display: inline-block;
+    align-content: center;
+    margin-top:10px;
+}

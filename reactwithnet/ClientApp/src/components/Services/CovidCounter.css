@@ -1,0 +1,22 @@
+﻿.col-counter {
+    align-content: space-around;
+    padding-top:17px;
+    padding-bottom: 17px;
+    background-color: #f5e8e1;
+    border-left: 3px solid gray;
+}
+p{
+    color: black;
+    opacity: 0.9;
+    font-size:16px;
+}
+h3{
+    color: black;
+    
+}
+.positive{
+    color: green;
+}
+.negative{
+    color: red;
+}

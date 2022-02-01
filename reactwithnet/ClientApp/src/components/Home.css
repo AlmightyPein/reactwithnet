@@ -1,0 +1,37 @@
+﻿.banner {
+    /* Center and scale the image nicely */
+    position: relative;
+    padding-right: 0px;
+    padding-left: 0px;
+    padding-bottom: 0px;
+    margin-bottom:auto;
+    margin-right: auto;
+    margin-left: auto;
+}
+.img {
+    width: 100%;
+    height: auto;
+    background-image: url('https://media.npr.org/assets/img/2020/09/11/jesse_zhang_npr_vaccine_covid_custom-f351b36d5e0e6337929829fc665d415a15089d20.jpg');
+    background-color: dimgray;
+    background-size: cover;
+    opacity: 1;
+    background-repeat: no-repeat;
+    padding-right: 0px;
+    padding-left: 0px;
+    margin-right: auto;
+    margin-left: auto;
+
+    padding-top: 150px;
+    padding-bottom: 150px;
+
+    margin-bottom: auto;
+    margin-top: auto;
+}
+.container-full {
+    padding-right: 0px;
+    padding-left: 0px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+
