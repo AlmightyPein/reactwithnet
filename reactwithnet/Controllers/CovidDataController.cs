@@ -6,7 +6,7 @@ namespace reactwithnet.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-
+    
     [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
     public class CovidDataController : ControllerBase
     {

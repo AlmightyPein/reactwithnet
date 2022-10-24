@@ -27,7 +27,7 @@
 }
 .tooltip {
     pointer-events: none;
-    position: absolute;
+    position: fixed;
     border: solid;
     background-color: white;
     visibility: hidden;

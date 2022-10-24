@@ -10,6 +10,13 @@ import { Registration } from './components/Auth/Registration';
 import { Login } from './components/Auth/Login';
 import './custom.css'
 import { ConfirmEmail } from './components/Auth/ConfirmEmail';
+import AuthRoute from './components/Auth/AuthRoute';
+import Dashboard from './components/User/dashboard';
+import Profile from './components/User/Profile';
+import Doctor from './components/User/Doctor';
+import Test from './components/test2';
+import CoronaBackground from './components/Services/CoronaBackground';
+
 
 export default class App extends Component {
   static displayName = App.name;
@@ -26,6 +33,12 @@ export default class App extends Component {
             <Route path='/Register' component={Registration} />
             <Route path='/ConfirmEmail' component={ConfirmEmail} />
             <Route path='/Login' component={Login} />
+            <Route path='/hometest' component={CoronaBackground}/>
+            <AuthRoute path='/dashboard' component={Dashboard} />
+            <AuthRoute path='/profile' component={Profile} />
+            <AuthRoute path='/doctor' component={Doctor} />
+            <Route path='/Test' component={Test} />
+            
       </Layout>
     );
   }

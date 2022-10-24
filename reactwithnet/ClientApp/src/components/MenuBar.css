@@ -20,11 +20,11 @@ html {
 {
     background-color:grey;
 }
-.menu-link {
-    color: black;
+.navbar-link {
+    color: #cdc8c8;
 }
-.menu-link:hover{
-    color: darkgrey
+.navbar-link:hover{
+    color: dimgray;
 }
 .bruh {
     background-color: black;

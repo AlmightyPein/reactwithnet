@@ -1,4 +1,4 @@
-﻿import { get, getJSON } from 'jquery';
+﻿
 import React, { Component } from 'react';
 import { Col, Container, Row } from 'reactstrap';
 import './CovidCounter.css';
@@ -25,7 +25,7 @@ export class CovidCounter extends Component {
             let indiaCovData = content.at(-1);
             return (
                 
-                    <Row>
+                    <Row className="font-">
                     <Col className="col-counter">
                         <p>Active Cases{(indiaCovData.active > indiaCovData.new_active) ? <label class="positive">(▼)</label> : <label>(▲)</label>}</p>
                         <h3>{content.at(-1).new_active} ({indiaCovData.new_active > indiaCovData.active ?
@@ -66,9 +66,16 @@ export class CovidCounter extends Component {
         else {return(<h3>loading...</h3>)}
     }
     async populateCovidData() {
-        const response = await fetch('https://www.mohfw.gov.in/data/datanew.json');
-        const data = await response.json();
-        this.setState({ CovidData: data, loading: false });
+        try {
+            const response = await fetch('https://www.mohfw.gov.in/data/datanew.json');
+            const data =  await response.json();
+            this.setState({ CovidData: data, loading: false });
+        }
+        catch (e) {
+            this.setState({ CovidData: e.response, loading: false });
+        }
+
+        
         
     }
 }

@@ -21,12 +21,23 @@
     margin-right: auto;
     margin-left: auto;
 
-    padding-top: 150px;
-    padding-bottom: 150px;
+    padding-top: 10px;
+    padding-bottom: 20vw;
 
     margin-bottom: auto;
     margin-top: auto;
 }
+.crop {
+        width: 200px;
+        height: 150px;
+        overflow: hidden;
+    }
+
+.crop img {
+      width: 400px;
+      height: 300px;
+      margin: -75px 0 0 -100px;
+    }
 .container-full {
     padding-right: 0px;
     padding-left: 0px;

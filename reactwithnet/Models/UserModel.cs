@@ -17,6 +17,12 @@ namespace reactwithnet.Models
         [MinLength(3)]
         public string? Username { get; set; }
 
+        [MinLength(1), MaxLength(56)]
+        public string? FirstName { get; set; }
+
+        [MinLength(1), MaxLength(56)]
+        public string? LastName { get; set; }
+
         [Required(ErrorMessage = "Email is required")]
         //[Unique(ErrorMessage = "This already exist !!")]
         [MinLength(3), MaxLength(128)]
@@ -24,7 +30,6 @@ namespace reactwithnet.Models
 
         public string? Email { get; set; }
 
-        
         [Required(ErrorMessage = "Password is required")]
         [DataType(DataType.Password)]
         [MaxLength(512), MinLength(8)]
@@ -42,6 +47,8 @@ namespace reactwithnet.Models
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid ConfirmationToken{ get; set; } = Guid.NewGuid();
+
+
 
     }
     

@@ -5,6 +5,12 @@ using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using reactwithnet.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using System.Linq;
+
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace reactwithnet.Controllers
@@ -17,6 +23,20 @@ namespace reactwithnet.Controllers
         public AuthController(UserContext context)
         {
             _userContext = context;
+        }
+        [HttpPost("isUniqueUser")]
+        public bool isUniqueUser([FromBody]string username)
+        {
+            try{
+            var isunique = _userContext.Users.FirstOrDefault(user=>user.Username!=username);
+            return true;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                 return false;
+            }
+            
         }
         // GET: api/<RegistrationController>
         [HttpPost("register")]
@@ -51,12 +71,15 @@ namespace reactwithnet.Controllers
     
                 _userContext.Add(User);
                 _userContext.SaveChanges();
-                 mail.SendEmail("smtpt9602@gmail.com", "shikharmishra.nu@gmail.com", "smtp.gmail.com", "smtpt9602@gmail.com", "@heheboi01", "Test for Authentication", $"<a href='{ this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/ConfirmEmail?token={User.ConfirmationToken}'>Click on this link to verify</a>");
+                 mail.SendEmail("smtpt9602@gmail.com", "shikharmishra.nu@gmail.com", "smtp.gmail.com", "smtpt9602@gmail.com", "twuhtixxcgkpixva", "Test for Authentication", $"<a href='{ this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/ConfirmEmail?token={User.ConfirmationToken}'>Click on this link to verify</a>");
                 //Console.WriteLine();
+                return Ok("Registered successfully");
             }
             catch (Exception ex)
             {
+            
                 Console.WriteLine(ex.Message);
+                return BadRequest("Something Went wrong");
             }
             
             Console.WriteLine(_userContext.Users.First().Username);
@@ -78,36 +101,164 @@ namespace reactwithnet.Controllers
             }
             catch(Exception ex)
             {
-                
                 return BadRequest("Something Went Wrong");
             }
         }
-        [HttpPost("login")]
 
+        [ApiExplorerSettings(IgnoreApi = true)]
+        protected async void  GenerateCookie(UserModel user)
+        {
+            var claims = new List<Claim>
+            {
+               new Claim(ClaimTypes.NameIdentifier, user.ConfirmationToken.ToString()),
+               new Claim(ClaimTypes.Role, "User"),
+            };
+            var claimsIdentity = new ClaimsIdentity(
+            claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var authProperties = new AuthenticationProperties
+            {
+               
+                //AllowRefresh = <bool>,
+                // Refreshing the authentication session should be allowed.
+
+                //ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
+                // The time at which the authentication ticket expires. A 
+                // value set here overrides the ExpireTimeSpan option of 
+                // CookieAuthenticationOptions set with AddCookie.
+
+                //IsPersistent = true,
+                // Whether the authentication session is persisted across 
+                // multiple requests. When used with cookies, controls
+                // whether the cookie's lifetime is absolute (matching the
+                // lifetime of the authentication ticket) or session-based.
+
+                //IssuedUtc = <DateTimeOffset>,
+                // The time at which the authentication ticket was issued.
+
+                //RedirectUri = <string>
+                // The full path or absolute URI to be used as an http 
+                // redirect response value.
+            };
+            await HttpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            new ClaimsPrincipal(claimsIdentity),
+            authProperties);
+        }
+
+        [HttpPost("login")]
         public async Task<ActionResult<string>> LoginUser(LoginData data)
         {
 
             try
             {
                 var User = _userContext.Users.FirstOrDefault(u => u.Username == data.UserName);
-                
-                string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-                password: data.Password,
-                salt: User.Salt,
-                prf: KeyDerivationPrf.HMACSHA256,
-                iterationCount: 100000,
-                numBytesRequested: 256 / 8));
-
-                if (hashed.Equals( User.Password) && User!=null)
+                if (User != null)
                 {
-                    Console.WriteLine(User.Username);
+                    string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                    password: data.Password,
+                    salt: User.Salt,
+                    prf: KeyDerivationPrf.HMACSHA256,
+                    iterationCount: 100000,
+                    numBytesRequested: 256 / 8));
+
+
+                    if (hashed.Equals(User.Password))
+                    {
+                        GenerateCookie(User);
+                        return Ok("Logged in Successfully");
+                    }
                 }
+                return BadRequest("Username or Password is wrong");
+                
             }
             catch(Exception ex)
             {
                 Console.Error.WriteLine(ex.Message);
+                return BadRequest("Something went wrong");
             }
-            return Ok("agcvfdf");
+    
+        }
+        [HttpGet("test")]
+        [Authorize]
+        public ActionResult<string> test()
+        {
+            return Ok("dfd");
+        }
+
+        [HttpGet("CheckAuth")]
+        [Authorize]
+        public bool CheckAuth()
+        {
+            return true;
+        }
+
+        [HttpGet("getprofiledata")]
+        [Authorize]
+        public ActionResult<ProfileData> GetProfileData()
+        {
+            var UID = HttpContext.User.Claims.First().Value;
+            var User = _userContext.Users.FirstOrDefault(u => u.ConfirmationToken.ToString() == UID);
+            if (User!=null)
+            {
+                ProfileData ProfileData = new ProfileData();
+                ProfileData.Username = User.Username;
+                ProfileData.FirstName = User.FirstName;
+                ProfileData.LastName = User.LastName;
+                ProfileData.Email = User.Email;
+                
+
+                return Ok(ProfileData);
+            }
+            return BadRequest("No such user exists");
+        }
+        [HttpPut("updatedata")]
+        [Authorize]
+        public ActionResult<string> UpdateData([FromBody]ProfileData data)
+        {
+            try
+            {
+                var UID = HttpContext.User.Claims.First().Value;
+                var User = _userContext.Users.FirstOrDefault(u=>u.ConfirmationToken.ToString()==UID);
+                if(User!=null)
+                {
+                    string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                    password: data.ConfirmPassword,
+                    salt: User.Salt,
+                    prf: KeyDerivationPrf.HMACSHA256,
+                    iterationCount: 100000,
+                    numBytesRequested: 256 / 8));
+
+                    User.Username = data.Username;
+                    User.FirstName = data.FirstName;
+                    User.LastName = data.LastName;
+                    User.Email = data.Email;
+                    User.Password = hashed;
+                    _userContext.SaveChanges();
+                    
+                    Console.WriteLine(User.Username);
+                    return Ok("Data Updated succefully");
+                }
+                return BadRequest("you are trying something fishy, don't do it");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);  
+                return BadRequest("Something went wrong");
+            }
+        }
+        [HttpPost("logout")]
+        [Authorize]
+        public ActionResult<string> LogOut()
+        {
+            try
+            {
+                HttpContext.SignOutAsync();
+                return Ok("Logged Out succesfully");
+            }
+            catch(Exception ex)
+            {
+                return BadRequest("Something went wrong");
+            }
         }
     }
 }

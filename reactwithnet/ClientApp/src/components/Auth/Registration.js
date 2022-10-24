@@ -35,7 +35,10 @@ export class Registration extends Component {
             TosConsent: this.tos.current.checked,
 
         }
-       console.log(typeof(UserData.Username));
+       console.log(typeof (UserData.Username));
+
+
+       //http POST: To Register User
         axios.post('/api/auth/register',
             UserData,
             {
@@ -68,6 +71,14 @@ export class Registration extends Component {
         }
 
     }
+    checkUniqueUser(e)
+    {
+           axios.post('/api/auth/isUniqueUser',e.target.value, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+           }).then(res => { if(!res.data)e.target.setCustomValidity("User Already Exists") }).catch(err=>console.log(err.response))
+        }
     render() {
 
         return (
@@ -80,7 +91,7 @@ export class Registration extends Component {
                             <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-registration/draw1.webp" /> </Col>
                         <Col className="justify-content-center" sm={5}>
 
-                                <h2>Sign Up</h2>
+                                <h2 className="pb-3">Sign Up</h2>
 
                             <Form onSubmit={this.sendData}>
                             
@@ -88,7 +99,7 @@ export class Registration extends Component {
                                     <Container className="test">
                                     <PersonFill class="icon"  />
                                
-                                        <Input required innerRef={ this.usr }placeholder="Username" id="username" type="text" />
+                                        <Input required onChange={this.checkUniqueUser} innerRef={ this.usr }placeholder="Username" id="username" type="text" />
 
                                 </Container>
                                 

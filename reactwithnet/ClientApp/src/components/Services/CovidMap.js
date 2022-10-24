@@ -2,22 +2,23 @@
 import { Container } from 'reactstrap';
 import $, { map } from 'jquery';
 import './CovidMap.css';
+import axios from 'axios'
 
-import IndiaMap from "../../Assets/india2019High.svg";
-import india from "../../Assets/india.svg"
 
 export class CovidMap extends Component {
 	Cdata;
     static displayName = this.name;
     constructor(props) {
 		super(props);
-		this.state = { full_data: [], loading: true, name:"", active_cases:"", new_cases:"", tt_x:"", tt_y:"", tt_visibility: "hidden" };
+		this.state = { full_data: [], loading: true, name:"", active_cases:"", new_cases:"", positive:'',total_vacc:'', new_vacc:"", tt_x:"", tt_y:"", tt_visibility: "hidden" };
 		this.titleRef = createRef();
 		this.landref = createRef();
 		this.naruto = "naruto";
 		this.getCovidData();
 		this.showCovidData = this.showCovidData.bind(this);
 		this.name = "";
+		this.vacc_data='';
+		//fetch('https://www.mygov.in/sites/default/files/covid/vaccine/vaccine_counts_today.json').then(res=>console.log(res)).catch(e=>console.log(e))
 		//this.showTooltip = this.showTooltip.bind(this);
 	}
 	
@@ -52,6 +53,7 @@ export class CovidMap extends Component {
 			}
 			$(this).css("fill", color);
 		})
+		//axios.get('https://www.mygov.in/sites/default/files/covid/vaccine/vaccine_counts_today.json').then(res=>{this.vacc_data=res.data; console.log(res.data)}).catch(e=>console.log(e))
 		this.showTooltip();
 		
 		//this.titleRef.current.innerHTML = "gf";
@@ -68,12 +70,17 @@ export class CovidMap extends Component {
 					if (mapData[i].name == "Kerala***")
 						this.setState({ name: "Kerala" })
 					else
-						this.setState({ name: mapData[i].name, active_cases: mapData[i].new_active, new_cases: (mapData[i].new_active - mapData[i].active) })
+						this.setState({ name: mapData[i].name, active_cases: mapData[i].new_active, positive:mapData[i].new_positive,new_cases: (mapData[i].new_active - mapData[i].active) })
 				}
             }
 		}
-		var x = e.pageX; //position of mouse on the page
-		var y = e.pageY;
+		for(let i = 0; i<this.vacc_data.length; i++)
+		{
+			if(this.vacc_data[i].state_name == e.target.getAttribute('title'))
+			  this.setState({total_vacc:this.vacc_data[i].total});
+		}
+		var x = e.clientX; //position of mouse on the page
+		var y = e.clientY;
 		this.setState({ tt_x:x, tt_y:y , tt_visibility:"visible"})
 		
 		
@@ -85,12 +92,16 @@ export class CovidMap extends Component {
 	show() {
 		if (!(this.state.loading))
 			return (
-				<div>
+				<div >
 					<span><b>State:</b> {this.state.name}</span>
 					<br />
 					<span><b>Active Cases:</b> {this.state.active_cases}</span>
 					<br />
 					<span><b>New Active Cases:</b> {this.state.new_cases}</span>
+					<br/>
+					<span><b>Total Positive Cases:</b> {this.state.positive}</span>
+					
+				
 				</div>
 				
 
@@ -149,7 +160,7 @@ export class CovidMap extends Component {
 					</g>
 				</svg>
 				
-				<div class="tooltip" style={{ left: this.state.tt_x, top: this.state.tt_y, visibility: this.state.tt_visibility }} > {this.show()} </div>
+				<div className="tooltip" style={{ left: this.state.tt_x, top: this.state.tt_y, visibility: this.state.tt_visibility }} > {this.show()} </div>
 				
 			</Container>
 
@@ -159,8 +170,10 @@ export class CovidMap extends Component {
 	
 	async getCovidData() {
 		const response = await fetch('api/coviddata');
+
 		let data = await response.json();
 		this.setState({ full_data: data, loading: false });
 	}
+	
 	
 }

@@ -9,7 +9,16 @@ const context =  [
     "/api/coviddata",
     "/api/auth/register",
     "/api/auth/confirmemail",
-    "/api/auth/login"
+    "/api/auth/login",
+    "/api/auth/test",
+    "/api/auth/CheckAuth",
+    "/api/auth/getprofiledata",
+    "/api/auth/updatedata",
+    "/swagger",
+    "/api/doctor/getdisease",
+    "/api/auth/logout",
+    "/api/auth/isUniqueUser",
+    "/api/doctor/getdiseasefromimage"
 ];
 
 module.exports = function(app) {

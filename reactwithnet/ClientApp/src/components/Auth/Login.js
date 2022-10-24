@@ -1,8 +1,10 @@
 ﻿import { Component, createRef } from 'react';
 import './Registration.css';
-import { Container, Form, FormGroup, Label, Input, Col, Row, Button } from 'reactstrap';
+import { Container, Form, FormGroup, Label, Input, Col, Row, Button,Alert} from 'reactstrap';
 import { PersonFill, EnvelopeFill, ArrowRepeat, KeyFill } from 'react-bootstrap-icons';
-import  axios  from 'axios';
+import axios from 'axios';
+import { Redirect } from 'react-router-dom';
+
 export class Login extends Component
 {
     constructor(props) {
@@ -10,6 +12,9 @@ export class Login extends Component
         this.username = createRef();
         this.password = createRef();
         this.sendData = this.sendData.bind(this);
+        this.state = {showAlert: false, alertText: ""}
+        this.showError = this.showError.bind(this);
+
     }
     sendData(e) {
         e.preventDefault();
@@ -23,7 +28,22 @@ export class Login extends Component
                 headers: {
                     'Content-Type': 'application/json'
                 }
-            }).then((response) => { console.log(response) }).catch((error) => { console.log(error.response) });
+            }).then((response) =>
+            {
+                if (response.status == 200) {
+                    this.setState({ showAlert: false });
+                    this.props.history.push('/dashboard');
+                    window.location.reload();
+                }
+                
+            }).catch((error) => {
+                if (error.response.status == 400)
+                    this.setState({ showAlert: true, alertText: error.response.data })
+                else
+                    this.setState({ showAlert: false })});
+    }
+    showError() {
+        
     }
     render() {
         return (
@@ -36,7 +56,8 @@ export class Login extends Component
                         <Col className="justify-content-center" sm={5}>
 
                             <h2>Login</h2>
-
+                            { this.state.showAlert ? <Alert color='danger'>{this.state.alertText}</Alert> : null}
+                           
                             <Form onSubmit={this.sendData}>
 
                                 <FormGroup>
@@ -67,10 +88,11 @@ export class Login extends Component
 
                                     <Button type="submit" id="submit" color="primary">Login</Button>
                                 </Container>
+                                
                             </Form>
-
+                            
                         </Col>
-
+                        
                     </Row>
 
                 </Container>
